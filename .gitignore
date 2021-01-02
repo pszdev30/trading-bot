@@ -2,3 +2,4 @@ bot
 .ipynb_checkpoints/bot-checkpoint.ipynb
 .ipynb_checkpoints/indicators-checkpoint.ipynb
 .vscode/settings.json
+__pycache__/secrets.cpython-38.pyc

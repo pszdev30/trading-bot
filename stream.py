@@ -2,14 +2,13 @@ import alpaca_trade_api as alpaca
 import websocket
 import json
 import pandas as pd
+from secrets import *
 
 
 # Alpaca API config stuff
 
-APCA_API_BASE_URL = 'https://paper-api.alpaca.markets'
-APCA_API_KEY = 'PKAYAWQZMFDA9J1XTBXH'
-APCA_SECRET_KEY = 'KHml00XOyP9ar8TiFtr6ZwBgn5KCRK1hk0Ed7L6i'
 
+# real-time API for alpaca (if needed)
 # api = alpaca.REST(APCA_API_KEY, APCA_SECRET_KEY, APCA_API_BASE_URL)
 
 
