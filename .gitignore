@@ -4,3 +4,4 @@ bot
 .vscode/settings.json
 __pycache__/secrets.cpython-38.pyc
 secrets.py
+__pycache__/globals.cpython-38.pyc
