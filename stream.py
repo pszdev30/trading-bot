@@ -21,7 +21,7 @@ AUTHENTICATE = {
 }
 
 listen = {
-    'action': 'listen', 'data': {'streams': ['AM.MSFT', 'AM.FB', 'AM.CMCSA', 'AM.COKE']}
+    'action': 'listen', 'data': {'streams': ['Q.MSFT', 'Q.FB', 'Q.CMCSA', 'Q.KO']}
 }
 
 
