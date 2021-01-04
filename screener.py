@@ -6,6 +6,8 @@ from globals import *
 
 # fundamental indicators: Debt/Equity ratio, PEG, Sales past 5Y, EPS next 5Y, EPS past 5Y, Profit Margin
 
+INDICATORS = 8
+
 
 def generate_tickers():
     csv = pd.read_html(
@@ -49,7 +51,7 @@ def screener():
         ticker_info = finviz.get_stock(ticker)
         points = 0
         values = [ticker_info['EPS next 5Y'], ticker_info['EPS past 5Y'], ticker_info['Sales past 5Y'],
-                  ticker_info['Debt/Eq'], ticker_info['Profit Margin'], ticker_info['PEG'], ticker_info['Avg Volume']]
+                  ticker_info['Debt/Eq'], ticker_info['Profit Margin'], ticker_info['PEG'], ticker_info['Avg Volume'], ticker_info['Recom']]
 
         if valid(values) != -1:
             next_five_year_eps = clean(
@@ -90,7 +92,12 @@ def screener():
             if volume_check(avg_volume):
                 points += 1
 
-            points_list[ticker] = points / 7
+            mean_recommendation = values[7]
+
+            if float(mean_recommendation) < 3:
+                points += 1
+
+            points_list[ticker] = points / INDICATORS
 
     # if next_five_year_eps > 5 and past_five_year_eps > 5 and five_year_sales > 5 and debt_equity_ratio < 1.25 and profit_margin > 3.5 and peg < 2.5:
 
