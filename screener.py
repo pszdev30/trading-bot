@@ -4,8 +4,6 @@ import finviz
 from globals import *
 
 
-# fundamental indicators: Debt/Equity ratio, PEG, Sales past 5Y, EPS next 5Y, EPS past 5Y, Profit Margin
-
 INDICATORS = 8
 
 
@@ -20,6 +18,7 @@ def valid(values):
     for value in values:
         if value == '-':
             return -1
+    return 1
 
 
 def volume_check(avg_volume):
@@ -99,17 +98,13 @@ def screener():
 
             points_list[ticker] = points / INDICATORS
 
-    # if next_five_year_eps > 5 and past_five_year_eps > 5 and five_year_sales > 5 and debt_equity_ratio < 1.25 and profit_margin > 3.5 and peg < 2.5:
-
     points_list = sorted(points_list.items(),
                          key=lambda x: x[1], reverse=True)
 
     screened_tickers = [ticker for ticker,
                         rating in points_list if rating > .5]
 
-    return len(screened_tickers)
-
-    # return [ticker for ticker in tickers if int(finviz.get_stock(ticker)['EPS next 5Y']) > 0]
+    return 1
 
 
 # generate_tickers()
