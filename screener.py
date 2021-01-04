@@ -20,8 +20,16 @@ def valid(values):
             return -1
 
 
-def clean(value):
+def volume_check(avg_volume):
+    if 'K' in avg_volume:
+        return False
 
+    if float(avg_volume[:-1]) < 10:
+        return False
+    return True
+
+
+def clean(value):
     if '%' in value:
         value = value[:-1]
     if '-' in value:
@@ -41,7 +49,7 @@ def screener():
         ticker_info = finviz.get_stock(ticker)
         points = 0
         values = [ticker_info['EPS next 5Y'], ticker_info['EPS past 5Y'], ticker_info['Sales past 5Y'],
-                  ticker_info['Debt/Eq'], ticker_info['Profit Margin'], ticker_info['PEG']]
+                  ticker_info['Debt/Eq'], ticker_info['Profit Margin'], ticker_info['PEG'], ticker_info['Avg Volume']]
 
         if valid(values) != -1:
             next_five_year_eps = clean(
@@ -77,19 +85,22 @@ def screener():
             if peg <= 2.5:
                 points += 1
 
-            points_list[ticker] = points / 6
+            avg_volume = values[6]
+
+            if volume_check(avg_volume):
+                points += 1
+
+            points_list[ticker] = points / 7
 
     # if next_five_year_eps > 5 and past_five_year_eps > 5 and five_year_sales > 5 and debt_equity_ratio < 1.25 and profit_margin > 3.5 and peg < 2.5:
 
     points_list = sorted(points_list.items(),
-                         key=lambda x: x[1], reverse=True)[:80]
+                         key=lambda x: x[1], reverse=True)
 
-    return len(points_list), points_list
+    screened_tickers = [ticker for ticker,
+                        rating in points_list if rating > .5]
 
-    # for ticker, rating in points_list.items():
-    #     screened_tickers.append(ticker)
-
-    return 1
+    return len(screened_tickers)
 
     # return [ticker for ticker in tickers if int(finviz.get_stock(ticker)['EPS next 5Y']) > 0]
 
