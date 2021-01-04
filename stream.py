@@ -8,10 +8,6 @@ from secrets import *
 # Alpaca API config stuff
 
 
-# real-time API for alpaca (if needed)
-# api = alpaca.REST(APCA_API_KEY, APCA_SECRET_KEY, APCA_API_BASE_URL)
-
-
 AUTHENTICATE = {
     "action": "authenticate",
     "data": {
