@@ -5,3 +5,7 @@ from secrets import *
 
 
 api = alpaca.REST(APCA_API_KEY, APCA_SECRET_KEY, APCA_API_BASE_URL)
+
+
+def ingest_stream(minute_bar):
+    print(minute_bar)
