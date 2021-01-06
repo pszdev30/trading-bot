@@ -7,3 +7,4 @@ secrets.py
 __pycache__/globals.cpython-38.pyc
 bot.ipynb
 indicators.ipynb
+__pycache__/ta.cpython-38.pyc
