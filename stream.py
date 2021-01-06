@@ -3,10 +3,10 @@ import websocket
 import json
 import pandas as pd
 from secrets import *
+import ta
 
 
 # Alpaca API config stuff
-
 
 AUTHENTICATE = {
     "action": "authenticate",
@@ -16,8 +16,10 @@ AUTHENTICATE = {
     }
 }
 
+tickers = ['AM.MSFT', 'AM.FB', 'AM.CMCSA', 'AM.KO']
+
 listen = {
-    'action': 'listen', 'data': {'streams': ['Q.MSFT', 'Q.FB', 'Q.CMCSA', 'Q.KO']}
+    'action': 'listen', 'data': {'streams': ['alpacadatav1/AM.MSFT', 'alpacadatav1/AM.FB']}
 }
 
 
@@ -26,12 +28,13 @@ def on_open(ws):
     ws.send(json.dumps(listen))
 
 
-def on_message(ws, message):
-    print(message)
+def on_message(ws, minute_bar):
+
+    ta.ingest_stream(minute_bar)
 
 
 def on_close(ws):
-    pass
+    print('closed connection')
 
 
 socket = 'wss://data.alpaca.markets/stream'
