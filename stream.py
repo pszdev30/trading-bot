@@ -16,10 +16,10 @@ AUTHENTICATE = {
     }
 }
 
-tickers = ['AM.MSFT', 'AM.FB', 'AM.CMCSA', 'AM.KO']
+tickers = ['alpacadatav1/AM.MSFT', 'alpacadatav1/AM.FB']
 
 listen = {
-    'action': 'listen', 'data': {'streams': ['alpacadatav1/AM.MSFT', 'alpacadatav1/AM.FB']}
+    'action': 'listen', 'data': {'streams': tickers}
 }
 
 
@@ -37,7 +37,7 @@ def on_close(ws):
     print('closed connection')
 
 
-socket = 'wss://data.alpaca.markets/stream'
+socket = APCA_WEB_SOCKET
 
 ws = websocket.WebSocketApp(socket, on_open=on_open,
                             on_message=on_message, on_close=on_close)
