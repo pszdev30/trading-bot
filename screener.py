@@ -125,7 +125,11 @@ def fundamental_screener(filtered_tickers):
     screened_tickers = [ticker for ticker,
                         rating in points_list if rating > .5]
 
+    screened_tickers = screened_tickers[:200]
+
     # return len(screened_tickers)
+
+    # return screened_tickers
 
     return 1
 
