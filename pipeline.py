@@ -1,7 +1,12 @@
+import alpaca_trade_api as alpaca
 import requests
 import json
 from globals import *
 from secrets import *
+
+
+api = alpaca.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
+                  APCA_API_PORTFOLIO_BASE_URL)
 
 
 def get_screened_ticker_data():
