@@ -8,3 +8,6 @@ __pycache__/globals.cpython-38.pyc
 bot.ipynb
 indicators.ipynb
 __pycache__/ta.cpython-38.pyc
+experiment.ipynb
+.ipynb_checkpoints/experiment-checkpoint.ipynb
+stream_payload.txt
