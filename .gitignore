@@ -11,3 +11,5 @@ __pycache__/ta.cpython-38.pyc
 experiment.ipynb
 .ipynb_checkpoints/experiment-checkpoint.ipynb
 stream_payload.txt
+bta-data
+__pycache__/pipeline.cpython-38.pyc
