@@ -13,7 +13,6 @@ api = alpaca.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
 def get_screened_ticker_data():
     timeframe = '1D'
     symbols = ','.join(screened_tickers)
-    # symbols = 'MSFT'
     limit = 200
 
     DAY_BAR_URL = APCA_DATA_BARS_URL + \
