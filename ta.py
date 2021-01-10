@@ -11,7 +11,13 @@ def calc_indicators(ticker):
     df = pd.read_csv('bta-data/{}.txt'.format(ticker),
                      parse_dates=True, index_col='Date')
 
-    return two_hundred_ema(df), two_hundred_sma(df)
+    # return two_hundred_sma(df), fifty_sma(df)
+    return macd(df)
+
+
+def fifty_sma(df):
+    sma = btalib.sma(df, period=50).df
+    return sma
 
 
 def two_hundred_sma(df):
@@ -19,13 +25,10 @@ def two_hundred_sma(df):
     return sma
 
 
-def two_hundred_ema(df):
-    ema = btalib.ema(df, period=200).df
-    return ema
-
-
-def macd(ticker):
-    pass
+def macd(df):
+    macd = btalib.macd(df).df
+    return macd
+    # pass
 
 
 z = calc_indicators('MSFT')
