@@ -11,8 +11,8 @@ import ta
 AUTHENTICATE = {
     "action": "authenticate",
     "data": {
-        "key_id": APCA_API_KEY,
-        "secret_key": APCA_SECRET_KEY
+        "key_id": APCA_API_KEY_ID,
+        "secret_key": APCA_API_SECRET_KEY
     }
 }
 
