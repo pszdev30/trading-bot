@@ -2,6 +2,7 @@ import alpaca_trade_api as alpaca
 import websocket
 import json
 import pandas as pd
+from globals import *
 from secrets import *
 import ta
 
@@ -16,7 +17,7 @@ AUTHENTICATE = {
     }
 }
 
-tickers = ['alpacadatav1/AM.MSFT', 'alpacadatav1/AM.FB']
+tickers = screened_tickers
 
 listen = {
     'action': 'listen', 'data': {'streams': tickers}
@@ -34,7 +35,7 @@ def on_message(ws, minute_bar):
 
 
 def on_close(ws):
-    print('closed connection')
+    print('closed WebSocket connection')
 
 
 socket = APCA_WEB_SOCKET
