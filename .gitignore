@@ -14,3 +14,4 @@ __pycache__/pipeline.cpython-38.pyc
 .ipynb_checkpoints/bot-checkpoint.ipynb
 .ipynb_checkpoints/indicators-checkpoint.ipynb
 .ipynb_checkpoints/experiment-checkpoint.ipynb
+aws-bot/.chalice/deployed/dev.json
