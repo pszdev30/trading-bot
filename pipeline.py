@@ -19,7 +19,6 @@ def get_screened_ticker_data():
         '/{}?symbols={}&limit={}'.format(timeframe, symbols, limit)
 
     r = requests.get(DAY_BAR_URL, headers=HEADERS)
-
     data = r.json()
 
     return data
