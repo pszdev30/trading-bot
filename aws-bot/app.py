@@ -20,6 +20,7 @@ def index():
 def buy():
     request = app.current_request
     ticker = request.json_body['ticker']
+
     api.submit_order(
         symbol=ticker,
         side='buy',
@@ -29,19 +30,19 @@ def buy():
         order_class='simple',
     )
 
+    return
+
 
 @app.route('/sell', methods=['POST'])
 def sell():
     request = app.current_request
     ticker = request.json_body['ticker']
-    api.submit_order(
-        symbol=ticker,
-        side='sell',
-        qty='100',
-        type='market',
-        time_in_force='day',
-        order_class='simple'
+
+    api.close_position(
+        symbol=ticker, qty='100'
     )
+
+    return
 
 
 # The view function above will return {"hello": "world"}
