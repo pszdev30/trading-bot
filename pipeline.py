@@ -1,17 +1,22 @@
-import alpaca_trade_api as alpaca
+# import alpaca_trade_api as alpaca
+from alpaca_trade_api.rest import REST, TimeFrame
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
+import pandas as pd
 import json
 from globals import *
 from secrets import *
 
-
-api = alpaca.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
-                  APCA_API_PORTFOLIO_BASE_URL)
+api = REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
+           APCA_API_PORTFOLIO_BASE_URL)
 
 
 def get_screened_ticker_data():
+    two_hundred_days_ago = (datetime.now() - timedelta(days=200)).date()
+    start = pd.Timestamp(two_hundred_days_ago, tz=NY).isoformat()
+    end = 'now'
     timeframe = '1D'
+
     symbols = ','.join(screened_tickers)
     limit = 200
 
@@ -26,7 +31,6 @@ def get_screened_ticker_data():
 
 def transform():
     data = get_screened_ticker_data()
-
     for ticker in data:
         file = 'bta-data/{}.txt'.format(ticker)
         f = open(file, 'w+')
