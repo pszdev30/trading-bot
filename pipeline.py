@@ -1,11 +1,12 @@
 # import alpaca_trade_api as alpaca
 from alpaca_trade_api.rest import REST, TimeFrame
-import requests
-from datetime import datetime, timedelta
-import pandas as pd
-import json
-from globals import *
 from secrets import *
+from datetime import datetime, timedelta
+import globals
+import pandas as pd
+import requests
+import json
+
 
 api = REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
            APCA_API_PORTFOLIO_BASE_URL)
@@ -13,11 +14,11 @@ api = REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
 
 def get_screened_ticker_data():
     two_hundred_days_ago = (datetime.now() - timedelta(days=200)).date()
-    start = pd.Timestamp(two_hundred_days_ago, tz=NY).isoformat()
+    start = pd.Timestamp(two_hundred_days_ago, tz=globals.NY).isoformat()
     end = 'now'
     timeframe = '1D'
 
-    symbols = ','.join(screened_tickers)
+    symbols = ','.join(globals.screened_tickers)
     limit = 200
 
     DAY_BAR_URL = APCA_DATA_BARS_URL + \
