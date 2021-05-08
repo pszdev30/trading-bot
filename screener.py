@@ -3,13 +3,10 @@ import requests
 import finviz
 from globals import *
 
+# while True:
+#     print('zoragm12')
 
 INDICATORS = 8
-
-sp = pd.read_csv('S&P500.csv')
-all_tickers = sp['Symbol']
-# print(type(all_tickers), all_tickers)s
-filtered_tickers = all_tickers.tolist()
 
 
 def generate_tickers():
@@ -17,6 +14,18 @@ def generate_tickers():
         'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
     sp = csv[0]['Symbol']
     sp.to_csv('S&P500.csv', columns=['Symbol'])
+
+
+generate_tickers()
+sp = pd.read_csv('S&P500.csv')
+all_tickers = sp['Symbol']
+filtered_tickers = all_tickers.tolist()
+
+
+def cleanTickers():
+    for i in range(len(filtered_tickers)):
+        if ('.' in filtered_tickers[i]):
+            filtered_tickers[i] = filtered_tickers[i].replace('.', '-')
 
 
 def sweep_valid_check(values):
@@ -47,20 +56,24 @@ def clean(value):
 
 
 def filter():
-    sp = pd.read_csv('S&P500.csv')
-    tickers = sp['Symbol']
+    # sp = pd.read_csv('S&P500.csv')
 
-    for ticker in tickers:
+    # tickers = sp['Symbol']
+
+    for ticker in filtered_tickers:
         ticker_info = finviz.get_stock(ticker)
         values = [ticker_info['Insider Trans'],
-                  ticker_info['Inst Trans'], ticker_info['SMA200']]
+                  ticker_info['Inst Trans']]
+
+        #   ticker_info['SMA200']
 
         if sweep_valid_check(values):
             insider_transactions = clean(values[0])
             institutional_trans = clean(values[1])
-            long_sma = clean(values[2])
+            # long_sma = clean(values[2])
 
-            if insider_transactions > 0 and institutional_trans > 0 and long_sma > 0:
+            # and long_sma > 0
+            if insider_transactions > 0 and institutional_trans > 0:
                 filtered_tickers.append(ticker)
 
 
@@ -74,20 +87,17 @@ def fundamental_screener(filtered_tickers):
                   ticker_info['Debt/Eq'], ticker_info['Profit Margin'], ticker_info['PEG'], ticker_info['Avg Volume'], ticker_info['Recom']]
 
         if sweep_valid_check(values):
-            next_five_year_eps = clean(
-                values[0])
+            next_five_year_eps = clean(values[0])
 
             if next_five_year_eps >= 5:
                 points += 1
 
-            past_five_year_eps = clean(
-                values[1])
+            past_five_year_eps = clean(values[1])
 
             if past_five_year_eps >= 5:
                 points += 1
 
-            five_year_sales = clean(
-                values[2])
+            five_year_sales = clean(values[2])
 
             if five_year_sales >= 5:
                 points += 1
@@ -127,13 +137,13 @@ def fundamental_screener(filtered_tickers):
 
     screened_tickers = screened_tickers[:200]
 
-    # return len(screened_tickers)
+    return len(screened_tickers)
 
-    # return screened_tickers
+    return screened_tickers
 
-    return 1
+    # return 1
 
 
-# generate_tickers()
+cleanTickers()
 filter()
 print(fundamental_screener(filtered_tickers))
