@@ -38,9 +38,7 @@ def sell():
     request = app.current_request
     ticker = request.json_body['ticker']
 
-    api.close_position(
-        symbol=ticker, qty='100'
-    )
+    api.close_position(symbol=ticker, qty='100')
 
     return
 
