@@ -6,6 +6,7 @@ import globals
 import pandas as pd
 import requests
 import json
+import redis
 
 
 api = REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
