@@ -1,45 +1,36 @@
-import alpaca_trade_api as alpaca
+from alpaca_trade_api import StreamConn
+from alpaca_trade_api.common import URL
 import websocket
 import json
 import pandas as pd
 from globals import *
 from secrets import *
-import ta
+import create_signal
+import asyncio
+import logging
+import threading
+import time
+import schedule
+from alpaca_trade_api.stream import Stream
 
 
 # Alpaca API config stuff
 
-AUTHENTICATE = {
-    "action": "authenticate",
-    "data": {
-        "key_id": APCA_API_KEY_ID,
-        "secret_key": APCA_API_SECRET_KEY
-    }
-}
-
-tickers = screened_tickers
-
-listen = {
-    'action': 'listen', 'data': {'streams': tickers}
-}
+async def bar_callback(minute_bar):
+    print('bar', minute_bar)
+    create_signal.ingest_stream(minute_bar)
 
 
-def on_open(ws):
-    ws.send(json.dumps(AUTHENTICATE))
-    ws.send(json.dumps(listen))
+schedule.every().day.at('9:15').do(start_job())
 
 
-def on_message(ws, minute_bar):
+def start_job():
+    # Initiate Class Instance
+    stream = Stream(APCA_API_KEY_ID,
+                    APCA_API_SECRET_KEY,
+                    base_url=URL(APCA_API_PORTFOLIO_BASE_URL),
+                    data_feed='iex')  # <- replace to SIP if you have PRO subscription
 
-    ta.ingest_stream(minute_bar)
-
-
-def on_close(ws):
-    print('closed WebSocket connection')
-
-
-socket = APCA_WEB_SOCKET
-
-ws = websocket.WebSocketApp(socket, on_open=on_open,
-                            on_message=on_message, on_close=on_close)
-ws.run_forever()
+    # subscribing to event
+    stream.subscribe_bars(bar_callback, 'PYPL')
+    stream.run()
