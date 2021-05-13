@@ -15,3 +15,10 @@ __pycache__/pipeline.cpython-38.pyc
 .ipynb_checkpoints/indicators-checkpoint.ipynb
 .ipynb_checkpoints/experiment-checkpoint.ipynb
 aws-bot/.chalice/deployed/dev.json
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/trading-bot.iml
+.idea/vcs.xml
+__pycache__/signal.cpython-38.pyc
