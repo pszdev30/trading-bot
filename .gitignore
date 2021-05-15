@@ -22,3 +22,4 @@ aws-bot/.chalice/deployed/dev.json
 .idea/trading-bot.iml
 .idea/vcs.xml
 __pycache__/signal.cpython-38.pyc
+comments.txt
