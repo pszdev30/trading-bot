@@ -3,8 +3,7 @@ from alpaca_trade_api.common import URL
 import websocket
 import json
 import pandas as pd
-from globals import *
-from secrets import *
+import globals
 import create_signal
 import asyncio
 import logging
@@ -18,17 +17,17 @@ from alpaca_trade_api.stream import Stream
 api = REST(secrets.APCA_API_KEY_ID, secrets.APCA_API_SECRET_KEY,
            secrets.APCA_API_PORTFOLIO_BASE_URL)
 
-# Alpaca API config stuff
+# Alpaca WebSocket config stuff
 
 AUTH = {
     "action": "auth",
-    "key": APCA_API_KEY_ID,
-    "secret": APCA_API_SECRET_KEY
+    "key": secrets.APCA_API_KEY_ID,
+    "secret": secrets.APCA_API_SECRET_KEY
 }
 
 LISTEN = {
     "action": "subscribe",
-    "bars": screened_tickers
+    "bars": globals.screened_tickers
 }
 
 
@@ -39,11 +38,10 @@ def on_open(ws):
 
 def on_message(ws, bar):
     create_signal.ingest_stream(bar)
-    # ws.close()
 
 
 def on_close(ws):
-    print('closed :)')
+    print('Trading closed for the day :)')
 
 
 def on_error(ws, error_msg):
