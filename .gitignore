@@ -5,6 +5,7 @@ trading-bot-main
 .idea
 __pycache__
 bta-data
+experiment.ipynb
 secrets.py
 stream_payload.txt
 output.txt
