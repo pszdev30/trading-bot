@@ -7,6 +7,8 @@ __pycache__
 bta-data
 experiment.ipynb
 secrets.py
+test.py
+app.py
 stream_payload.txt
 output.txt
 comments.txt
