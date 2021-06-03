@@ -7,6 +7,28 @@ import boto3
 import aws_secrets
 
 dynamodb = boto3.resource('dynamodb')
+
+
+def create_table():
+    bta_data = dynamodb.create_table(TableName='BTA-Data',
+                                     KeySchema=[{
+                                         'AttributeName': 'ticker',
+                                         'KeyType': 'HASH'
+                                     }, {
+                                         'AttributeName': 'date',
+                                         'KeyType': 'RANGE'
+                                     }],
+                                     AttributeDefinitions=[{
+                                         'AttributeName': 'ticker',
+                                         'AttributeType': 'S'
+                                     }, {
+                                         'AttributeName': 'date',
+                                         'AttributeType': 'S'
+                                     }],
+                                     BillingMode='PAY_PER_REQUEST')
+    print('BTA-Data status: ', bta_data.table_status)
+
+
 s3 = boto3.client('s3')
 secrets = aws_secrets.get_secrets()
 screened_tickers_byte = s3.get_object(Bucket='trading-bot-s3',
@@ -39,6 +61,7 @@ def insert_data_dynamodb():
                         'i': bar['i']
                     }
                 })
+    print('Completed ticker', key)
 
 
 def transform():
@@ -83,3 +106,4 @@ def get_alpaca_price_data():
 
 if __name__ == '__main__':
     insert_data_dynamodb()
+    # create_table()
