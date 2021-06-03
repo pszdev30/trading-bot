@@ -3,8 +3,8 @@ import requests
 import json
 from datetime import datetime, timedelta
 from decimal import Decimal
-import boto3
 import aws_secrets
+import boto3
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -45,10 +45,9 @@ HEADERS['APCA-API-SECRET-KEY'] = APCA_API_SECRET_KEY
 
 def insert_data_dynamodb():
     transformed_data = transform()
-    bta_data = dynamodb.Table('BTA_Data')
+    bta_data = dynamodb.Table('BTA-Data')
     for key in transformed_data:
         for bar in transformed_data[key]:
-            # print(bar)
             entry = bta_data.put_item(
                 Item={
                     'ticker': key,
@@ -61,7 +60,7 @@ def insert_data_dynamodb():
                         'i': bar['i']
                     }
                 })
-    print('Completed ticker', key)
+        print('Completed ticker', key)
 
 
 def transform():
@@ -105,5 +104,5 @@ def get_alpaca_price_data():
 
 
 if __name__ == '__main__':
+    create_table()
     insert_data_dynamodb()
-    # create_table()
