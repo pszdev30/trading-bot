@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import aws_secrets
 import boto3
+from boto3.dynamodb.conditions import Attr
+import botocore
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -34,6 +36,7 @@ secrets = aws_secrets.get_secrets()
 screened_tickers_byte = s3.get_object(Bucket='trading-bot-s3',
                                       Key='screened_tickers.json')
 screened_tickers_str = screened_tickers_byte['Body'].read().decode('UTF-8')
+screened_tickers_list = (screened_tickers_str).split(',')
 
 APCA_API_KEY_ID = secrets["APCA-API-KEY-ID"]
 APCA_API_SECRET_KEY = secrets["APCA-API-SECRET-KEY"]
@@ -46,21 +49,22 @@ HEADERS['APCA-API-SECRET-KEY'] = APCA_API_SECRET_KEY
 def insert_data_dynamodb():
     transformed_data = transform()
     bta_data = dynamodb.Table('BTA-Data')
-    for key in transformed_data:
-        for bar in transformed_data[key]:
-            entry = bta_data.put_item(
-                Item={
-                    'ticker': key,
-                    'date': bar['date'],
-                    'data': {
-                        'h': bar['h'],
-                        'c': bar['c'],
-                        'l': bar['l'],
-                        'v': bar['v'],
-                        'i': bar['i']
-                    }
-                })
-        print('Completed ticker', key)
+    with bta_data.batch_writer() as batch:
+        for key in transformed_data:
+            for bar in transformed_data[key]:
+                entry = batch.put_item(
+                    Item={
+                        'ticker': key,
+                        'date': bar['date'],
+                        'data': {
+                            'h': bar['h'],
+                            'c': bar['c'],
+                            'l': bar['l'],
+                            'v': bar['v'],
+                            'i': bar['i']
+                        }
+                    })
+            print('Completed ticker', key)
 
 
 def transform():
@@ -73,6 +77,7 @@ def transform():
             date = time.strftime('%Y-%m-%d')
             transformed_data[key].append({
                 'date': date,
+                't': Decimal(str(bar['t'])),
                 'o': Decimal(str(bar['o'])),
                 'h': Decimal(str(bar['h'])),
                 'l': Decimal(str(bar['l'])),
@@ -87,14 +92,14 @@ def transform():
 def get_alpaca_price_data():
     two_hundred_days_ago = (datetime.now() - timedelta(days=200)).date()
     start = pd.Timestamp(two_hundred_days_ago,
-                         tz="America/New_York").isoformat()
-    end = "now"
-    timeframe = "1D"
+                         tz='America/New_York').isoformat()
+    end = 'now'
+    timeframe = '1D'
 
     symbols = screened_tickers_str
     limit = 200
 
-    DAY_BAR_URL = APCA_DATA_BARS_URL + "/{}?symbols={}&limit={}".format(
+    DAY_BAR_URL = APCA_DATA_BARS_URL + '/{}?symbols={}&limit={}'.format(
         timeframe, symbols, limit)
 
     r = requests.get(DAY_BAR_URL, headers=HEADERS)
@@ -103,6 +108,45 @@ def get_alpaca_price_data():
     return data
 
 
+def update_bta_data():
+    bta_data = dynamodb.Table('BTA-Data')
+    transformed_data = transform()
+    with bta_data.batch_writer() as batch:
+        for key in transformed_data:
+            for bar in transformed_data[key]:
+                date_time = datetime.fromtimestamp(bar['t'])
+                date = date_time.strftime('%Y-%m-%d').split(' ')[0]
+                try:
+                    update = batch.update_item(
+                        Key={
+                            'ticker': key,
+                            'date': date
+                        },
+                        UpdateExpression='SET #attrName.o = :open',
+                        ExpressionAttributeNames={'#attrName': 'data'},
+                        ExpressionAttributeValues={':open': Decimal(bar['o'])},
+                        ConditionExpression=Attr('#attrName.o').not_exists())
+                except botocore.exceptions.ClientError as e:
+                    if (e.response['Error']['Code'] ==
+                            'ConditionalCheckFailedException'):
+                        raise
+            print('completed ticker:', key)
+        print('Completed update!')
+
+
+def delete_old_data():
+    bta_data = dynamodb.Table('BTA-Data')
+    with bta_data.batch_writer() as batch:
+        for ticker in screened_tickers_list:
+            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-17'})
+            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-18'})
+
+
 if __name__ == '__main__':
-    create_table()
-    insert_data_dynamodb()
+    delete_old_data()
+    # update_bta_data()
+    # date_time = datetime.fromtimestamp(1545730073)
+    # date = date_time.strftime('%Y-%m-%d').split(' ')[0]
+    # print(date)
+# create_table()
+# insert_data_dynamodb()
