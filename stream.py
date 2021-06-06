@@ -6,6 +6,7 @@ import threading
 import time
 import secrets
 import globals
+import ssl
 import boto3
 
 api = REST(secrets.APCA_API_KEY_ID, secrets.APCA_API_SECRET_KEY,
@@ -19,10 +20,7 @@ AUTH = {
     "secret": secrets.APCA_API_SECRET_KEY
 }
 
-LISTEN = {
-    "action": "subscribe",
-    "bars": globals.screened_tickers
-}
+LISTEN = {"action": "subscribe", "bars": globals.screened_tickers}
 
 
 def on_open(ws):
@@ -68,9 +66,12 @@ def get_time_to_market_close():
 def start_socket_connection():
     # websocket.enableTrace(True)
     socket = secrets.APCA_WEB_SOCKET
-    ws = websocket.WebSocketApp(socket, on_open=on_open,
-                                on_message=on_message, on_close=on_close, on_error=on_error)
-    ws.run_forever()
+    ws = websocket.WebSocketApp(socket,
+                                on_open=on_open,
+                                on_message=on_message,
+                                on_close=on_close,
+                                on_error=on_error)
+    ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
     # thread = threading.Thread(target=ws.run_forever)
     # thread.start()
