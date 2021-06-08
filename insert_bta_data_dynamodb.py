@@ -44,6 +44,7 @@ APCA_DATA_BARS_URL = secrets['APCA-DATA-BARS-V1-URL']
 HEADERS = json.loads(secrets["HEADERS"])
 HEADERS['APCA-API-KEY-ID'] = APCA_API_KEY_ID
 HEADERS['APCA-API-SECRET-KEY'] = APCA_API_SECRET_KEY
+REDIS_ELASTICACHE_CLUSTER_URL = secrets['REDIS-ELASTICACHE-CLUSTER-URL']
 
 
 def insert_data_dynamodb():
@@ -57,6 +58,7 @@ def insert_data_dynamodb():
                         'ticker': key,
                         'date': bar['date'],
                         'data': {
+                            'o': bar['o'],
                             'h': bar['h'],
                             'c': bar['c'],
                             'l': bar['l'],
@@ -142,8 +144,40 @@ def delete_old_data():
             batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-18'})
 
 
+def reset_data():
+    bta_data = dynamodb.Table('BTA-Data')
+    transformed_data = transform()
+    with bta_data.batch_writer() as batch:
+        for key in transformed_data:
+            for bar in transformed_data[key]:
+                batch.delete_item(Key={'ticker': key, 'date': bar['date']})
+            print('finished reset:', key)
+
+
+def reinsert_modified_format():
+    bta_data = dynamodb.Table('BTA-Data')
+    transformed_data = transform()
+    with bta_data.batch_writer() as batch:
+        for key in transformed_data:
+            for bar in transformed_data[key]:
+                batch.put_item(
+                    Item={
+                        'ticker': key,
+                        'date': bar['date'],
+                        'o': bar['o'],
+                        'h': bar['h'],
+                        'c': bar['c'],
+                        'l': bar['l'],
+                        'v': bar['v'],
+                        'i': bar['i']
+                    })
+            print('finished reinsertion:', key)
+
+
 if __name__ == '__main__':
-    delete_old_data()
+    reset_data()
+    reinsert_modified_format()
+    # delete_old_data()
     # update_bta_data()
     # date_time = datetime.fromtimestamp(1545730073)
     # date = date_time.strftime('%Y-%m-%d').split(' ')[0]
