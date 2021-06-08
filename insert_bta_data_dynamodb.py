@@ -32,7 +32,7 @@ def create_table():
 
 
 s3 = boto3.client('s3')
-secrets = aws_secrets.get_secrets()
+secrets = aws_secrets.get_secrets('APCA-SECRETS')
 screened_tickers_byte = s3.get_object(Bucket='trading-bot-s3',
                                       Key='screened_tickers.json')
 screened_tickers_str = screened_tickers_byte['Body'].read().decode('UTF-8')
