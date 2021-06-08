@@ -4,8 +4,8 @@ from botocore.exceptions import ClientError
 import boto3
 
 
-def get_secrets():
-    secret_name = "APCA-SECRETS"
+def get_secrets(secret_group):
+    secret_name = secret_group
     region_name = "us-east-2"
 
     # Create a Secrets Manager client
@@ -28,8 +28,11 @@ def get_secrets():
             raise e
     else:
         if 'SecretString' in get_secret_value_response:
-            secret = json.loads(get_secret_value_response['SecretString'])
-            return secret
+            if (secret_group == 'TRADING-BOT-AWS-SERVICES-SECRETS'):
+                return get_secret_value_response['SecretString']
+            else:
+                secret = json.loads(get_secret_value_response['SecretString'])
+                return secret
         else:
             decoded_binary_secret = base64.b64decode(
                 get_secret_value_response['SecretBinary'])
