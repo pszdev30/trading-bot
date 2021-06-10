@@ -32,7 +32,7 @@ def start(minute_bar):
 
     api = REST(secrets.APCA_API_KEY_ID, secrets.APCA_API_SECRET_KEY,
                secrets.APCA_API_PORTFOLIO_BASE_URL)
-    cache = DirectRedis(REDIS_ELASTICACHE_CLUSTER_URL)
+    cache = DirectRedis.from_url(REDIS_ELASTICACHE_CLUSTER_URL)
     ingest_stream(minute_bar)
     # cache.set('name', 'ashton')
     # expire_datetime = datetime.now() + timedelta(seconds=60)
