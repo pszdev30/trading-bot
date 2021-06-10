@@ -10,7 +10,9 @@ from direct_redis import DirectRedis
 import aws_secrets
 import btalib
 from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr
 import boto3
+import botocore
 
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
@@ -77,32 +79,6 @@ def transform():
     return transformed_data
 
 
-def update_bta_data():
-    transformed_data = transform()
-    bta_data = dynamodb.Table('BTA-Data')
-    with bta_data.batch_writer() as batch:
-        for key in transformed_data:
-            for bar in transformed_data[key]:
-                try:
-                    bta_data.put_item(
-                        Item={
-                            'ticker': key,
-                            'date': bar['date'],
-                            'o': bar['o'],
-                            'h': bar['h'],
-                            'l': bar['l'],
-                            'c': bar['c'],
-                            'v': bar['v'],
-                            'i': bar['i'],
-                            'ttl': int(time.time() + 60 * 60 * 24 * 200)
-                        })
-                except botocore.exceptions.ClientError as e:
-                    print('Exception:', e)
-                    raise
-            print('update completed:', key)
-        print('daily price data loaded!')
-
-
 def retrieve_bta_data(ticker):
     bta_data = dynamodb.Table('BTA-Data')
     current_epoch = int(time.time())
@@ -148,8 +124,38 @@ def load_redis_cache():
             print('finished ticker:', ticker)
 
 
+def update_bta_data():
+    transformed_data = transform()
+    bta_data = dynamodb.Table('BTA-Data')
+    with bta_data.batch_writer() as batch:
+        for key in transformed_data:
+            for bar in transformed_data[key]:
+                try:
+                    bta_data.put_item(
+                        Item={
+                            'ticker': key,
+                            'date': bar['date'],
+                            'o': bar['o'],
+                            'h': bar['h'],
+                            'l': bar['l'],
+                            'c': bar['c'],
+                            'v': bar['v'],
+                            'i': bar['i'],
+                            'ttl': int(time.time() + 60 * 60 * 24 * 200)
+                        },
+                        ConditionExpression=Attr('ticker').ne(key)
+                        & Attr('date').ne(bar['date']))
+                except botocore.exceptions.ClientError as e:
+                    if e.response['Error'][
+                            'Code'] != 'ConditionalCheckFailedException':
+                        raise
+            print('update completed:', key)
+        print('daily price data loaded!')
+
+
+update_bta_data()
 # print(REDIS_ELASTICACHE_CLUSTER_URL)
-print(load_redis_cache())
+# print(load_redis_cache())
 
 
 def ema(df):
