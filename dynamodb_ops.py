@@ -140,12 +140,13 @@ def update_bta_data():
         print('Completed update!')
 
 
-def delete_old_data():
+def delete_leftover_data():
     bta_data = dynamodb.Table('BTA-Data')
     with bta_data.batch_writer() as batch:
         for ticker in screened_tickers_list:
-            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-17'})
-            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-18'})
+            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-19'})
+            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-20'})
+            batch.delete_item(Key={'ticker': ticker, 'date': '2020-08-21'})
 
 
 def reset_data():
@@ -183,9 +184,9 @@ def reinsert_modified_format():
 
 
 if __name__ == '__main__':
-    reset_data()
-    reinsert_modified_format()
-    # delete_old_data()
+    # reset_data()
+    # reinsert_modified_format()
+    delete_leftover_data()
     # update_bta_data()
     # date_time = datetime.fromtimestamp(1545730073)
     # date = date_time.strftime('%Y-%m-%d').split(' ')[0]
