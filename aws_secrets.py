@@ -29,10 +29,7 @@ def get_secrets(secret_group):
     else:
         if 'SecretString' in get_secret_value_response:
             if (secret_group == 'TRADING-BOT-AWS-SERVICES-SECRETS'):
-                return get_secret_value_response['SecretString']
-            else:
-                secret = json.loads(get_secret_value_response['SecretString'])
-                return secret
+                return json.loads(get_secret_value_response['SecretString'])
         else:
             decoded_binary_secret = base64.b64decode(
                 get_secret_value_response['SecretBinary'])
